@@ -22,8 +22,8 @@ def plot_compare(dates,v1,v2,k1,k2):
     pic_name = '{}_vs_{}.png'.format(k1,k2)
     plt.plot(x_values, y)
     plt.title(title)
-    plt.show()
     plt.savefig(pic_name)
+    plt.show()
 
 
 def les_inn_data(kurser,kurssvigning):
