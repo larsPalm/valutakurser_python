@@ -68,7 +68,15 @@ if __name__ == '__main__':
             v1 = input('velg ønsket valuta(forkortelsen): ').upper()
             v2 = input('velg ønsket valuta(forkortelsen): ').upper()
             if v1 in valutaer and v2 in valutaer:
-                belop = int(input('ønsket beløp: '))
+                belop = input('ønsket beløp: ')
+                try:
+                    if ',' in belop:
+                        belop = belop.replace(',','.')
+                        belop = float(belop)
+                    else:
+                        belop = int(belop)
+                except:
+                    belop = 0
                 orginal = belop
                 if v1 == v2:
                     print('{:1.2f} {} er {:1.2f} {}'.format(orginal, v1, belop, v2))
