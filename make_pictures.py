@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from valutakurs import plot_compare
 from valutakurs import plot_kurs
+from valutakurs import plot_svigninger
+from valutakurs import plot_all
 from valutakurs import les_inn_data
 
 if __name__ == '__main__':
@@ -15,3 +17,5 @@ if __name__ == '__main__':
                     plot_kurs(dates, kurssvigning[v1], v1)
                 else:
                     plot_compare(dates, kurssvigning[v1], kurssvigning[v2],v1,v2)
+    plot_svigninger(dates,kurssvigning,kurser)
+    plot_all(dates,kurssvigning)
