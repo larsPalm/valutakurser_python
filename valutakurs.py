@@ -26,6 +26,28 @@ def plot_compare(dates,v1,v2,k1,k2):
     plt.show()
 
 
+def plot_all(dates,kurssvigning):
+    x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in dates]
+    for key in kurssvigning:
+        plt.plot(x_values, kurssvigning[key], label=key)
+    plt.title('alle valutaene')
+    plt.legend()
+    plt.savefig('alleValutaer.png')
+    plt.show()
+
+
+def plot_svigninger(dates,kurssvigning,kurser):
+    x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in dates]
+    for key in kurssvigning:
+        #y = [kurssvigning[key][x]/kurser[key] for x in range(len(kurssvigning[key]))]
+        y = [kurssvigning[key][x] /kurssvigning[key][0]  for x in range(len(kurssvigning[key]))]
+        plt.plot(x_values, y, label=key)
+    plt.title('alle valutaene sin utvikling')
+    plt.legend()
+    plt.savefig('utvikling.png')
+    plt.show()
+
+
 def les_inn_data(kurser,kurssvigning):
     filnavn = ['dkk.csv','dollar.csv','euro.csv','pund.csv','sek.csv']
     lengde = 0
@@ -57,7 +79,7 @@ if __name__ == '__main__':
     while True:
         inn = -1
         try:
-            inn = int(input('1 for sjekking av valutakurs, 2 for kursendringer av valuta og 0 for å avslutte: '))
+            inn = int(input('1 for sjekking av valutakurs, 2 for kursendringer av valuta,3 for plot av alle valutaer, 4 for utvikling og 0 for å avslutte: '))
         except:
             print('ugyldig input')
             inn = -1
@@ -119,4 +141,16 @@ if __name__ == '__main__':
                         print('du skrev in {} som både alt1 og alt2, ingen vits å plote grafen'.format(v1))
                 else:
                     print('en eller flere valg var ikke gyldig')
-
+        elif inn == 3:
+            try:
+                name = 'alleValutaer.png'
+                Image.show(name)
+            except:
+                plot_all(dates, kurssvigning)
+        elif inn == 4:
+            try:
+                name = 'utvikling.png'
+                Image.show(name)
+            except:
+                plot_svigninger(dates, kurssvigning, kurser)
+            plot_svigninger(dates, kurssvigning, kurser)
