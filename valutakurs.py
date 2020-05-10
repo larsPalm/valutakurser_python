@@ -9,6 +9,7 @@ from PIL import Image
 def plot_kurs(dates,value,kurs = None):
     x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in dates]
     plt.plot(x_values,value)
+    plt.xlim([x_values[0], x_values[-1]])
     if kurs != None:
         plt.title('{} vs NOK'.format(kurs))
         plt.savefig('{}.png'.format(kurs))
@@ -22,6 +23,7 @@ def plot_compare(dates,v1,v2,k1,k2):
     pic_name = '{}_vs_{}.png'.format(k1,k2)
     plt.plot(x_values, y)
     plt.title(title)
+    plt.xlim([x_values[0], x_values[-1]])
     plt.savefig(pic_name)
     plt.show()
 
@@ -32,6 +34,7 @@ def plot_all(dates,kurssvigning):
         plt.plot(x_values, kurssvigning[key], label=key)
     plt.title('alle valutaene')
     plt.legend()
+    plt.xlim([x_values[0], x_values[-1]])
     plt.savefig('alleValutaer.png')
     plt.show()
 
@@ -44,6 +47,7 @@ def plot_svigninger(dates,kurssvigning,kurser):
         plt.plot(x_values, y, label=key)
     plt.title('alle valutaene sin utvikling')
     plt.legend()
+    plt.xlim([x_values[0], x_values[-1]])
     plt.savefig('utvikling.png')
     plt.show()
 
