@@ -163,6 +163,7 @@ if __name__ == '__main__':
     valg = -1
     while valg != 0:
         print("type 0 for exit\ntype 1 for converting between to currencies\ntype 2 for plot compare of 2 currencies")
+        print("type 3 for comparing multiple currencies")
         try:
             valg = int(input("skriv inn ønske: "))
         except:
@@ -194,9 +195,16 @@ if __name__ == '__main__':
                 plot_compare(datoer, cur1, cur2, v1, v2)
             else:
                 print("en eller begge valutaene var ikke gyldige")
-        #to be implemented
+
         elif valg ==3:
-            pass
+            print(currency_list)
+            navn ="--"
+            mine_valg = []
+            while navn != '':
+                navn = input("skriv inn forkortelsen du vil ha med: ").upper()
+                if navn in currency_list:
+                    mine_valg.append(navn)
+            plot_currencies(min_df,mine_valg)
         #to be implemented
         elif valg == 4:
             pass
