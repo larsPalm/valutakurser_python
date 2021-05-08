@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
+from random import randint
 
 
 # plan to make sure it only calls the api once per day
@@ -144,8 +145,12 @@ def plot_compare(dates, y1, y2, k1, k2):
     x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in dates]
     y = [y1[i] / y2[i] for i in range(len(y1))]
     title = '{} vs {}'.format(k1, k2)
-    plt.plot(x_values, y)
-    plt.fill_between(x_values, y, alpha=0.5)
+    colors1 = ['b', "g", 'r', 'c', "m", "y", 'k']
+    colors2 = ["blue", "green", 'red', "cyan", "magenta", 'yellow', 'black']
+    index = randint(0, len(colors1)-1)
+    #index2 = randint(0, len(colors1) - 1)
+    plt.plot(x_values, y, colors1[index])
+    plt.fill_between(x_values, y, color=colors2[index], alpha=0.5)
     plt.title(title)
     plt.ylim(min(y), max(y))
     plt.xlim([x_values[0], x_values[-1]])
