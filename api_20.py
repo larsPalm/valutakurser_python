@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import json
 import requests
 from datetime import date
@@ -45,7 +46,7 @@ def get_info():
        #checks whether or not the data is "old", if the data is old, the program will fetch data from the api
        #else, it will read the information from a csv-file
        if old_date < end_l:
-           new_url = "https://data.norges-bank.no/api/data/EXR/B.USD+AUD+BDT+BRL+GBP+BGN+DKK+EUR+PHP+HKD+XDR+I44+INR+IDR+TWI+ISK+JPY+CAD+CNY+HRK+MXN+MMK+NZD+ILS+RON+BYN+TWD+PKR+PLN+RUB+SGD+CHF+SEK+ZAR+KRW+THB+CZK+TRY+HUF.NOK.SP?format=sdmx-json&startPeriod={}&endPeriod={}&locale=no".format(
+           new_url = "https://data.norges-bank.no/api/data/EXR/B.USD+AUD+BDT+BRL+GBP+BGN+DKK+EUR+PHP+HKD+XDR+INR+IDR+TWI+ISK+JPY+CAD+CNY+HRK+MXN+MMK+NZD+ILS+RON+BYN+TWD+PKR+PLN+RUB+SGD+CHF+SEK+ZAR+KRW+THB+CZK+TRY+HUF.NOK.SP?format=sdmx-json&startPeriod={}&endPeriod={}&locale=no".format(
                start_l, end_l)
            api_info = requests.get(new_url)
            info = api_info.json()
@@ -62,7 +63,7 @@ def get_info():
    except:
        end_l = date.today()
        start_l = date.today() + relativedelta(months=-6)
-       new_url = "https://data.norges-bank.no/api/data/EXR/B.USD+AUD+BDT+BRL+GBP+BGN+DKK+EUR+PHP+HKD+XDR+I44+INR+IDR+TWI+ISK+JPY+CAD+CNY+HRK+MXN+MMK+NZD+ILS+RON+BYN+TWD+PKR+PLN+RUB+SGD+CHF+SEK+ZAR+KRW+THB+CZK+TRY+HUF.NOK.SP?format=sdmx-json&startPeriod={}&endPeriod={}&locale=no".format(start_l, end_l)
+       new_url = "https://data.norges-bank.no/api/data/EXR/B.USD+AUD+BDT+BRL+GBP+BGN+DKK+EUR+PHP+HKD+XDR+INR+IDR+TWI+ISK+JPY+CAD+CNY+HRK+MXN+MMK+NZD+ILS+RON+BYN+TWD+PKR+PLN+RUB+SGD+CHF+SEK+ZAR+KRW+THB+CZK+TRY+HUF.NOK.SP?format=sdmx-json&startPeriod={}&endPeriod={}&locale=no".format(start_l, end_l)
        api_info = requests.get(new_url)
        info = api_info.json()
        cur_dict = find_curencies(info)
@@ -89,14 +90,14 @@ def find_curencies(json_data):
     for key in json_data["data"]["dataSets"][0]["series"]:
         attributes = json_data["data"]["dataSets"][0]["series"][key]["attributes"]
         cur_dict = json_data["data"]["dataSets"][0]["series"][key]["observations"]
-        if attributes[0] == 1 and attributes[2] ==1:
-            currencies.append([round(float(cur_dict[key][0]), 2)/100.0 for key in cur_dict])
+        if (attributes[0] == 1 or attributes[0] == 2 or attributes[0] == 0) and attributes[2] ==1:
+            currencies.append([round(float(cur_dict[key][0]), 4)/100.0 for key in cur_dict])
         else:
-            currencies.append([round(float(cur_dict[key][0]),2) for key in cur_dict])
+            currencies.append([round(float(cur_dict[key][0]),4) for key in cur_dict])
     base_curs = find_bas_cur(json_data)
     # mapping each list in the nested list to a string value which represent the base_cur
     map_cur_values = {cur: values for cur, values in zip(base_curs, currencies)}
-    map_cur_values["NOK"]= [1.00 for _ in range(len(currencies[0]))]
+    map_cur_values["NOK"]= [1.0000 for _ in range(len(currencies[0]))]
     return map_cur_values
 
 
@@ -109,6 +110,12 @@ def find_dates(json_data):
 #plan to save data to csv to minimize api usage
 def store_data(df):
     df.to_csv("currency.csv",sep=";")
+    file =open("dates.txt","w")
+    file.write(str(date.today())+"\n")
+    file.close()
+
+def store_data_json(df):
+    df.to_json("currency.json")
     file =open("dates.txt","w")
     file.write(str(date.today())+"\n")
     file.close()
@@ -128,7 +135,9 @@ def plot_compare(dates, v1, v2, k1, k2):
     title = '{} vs {}'.format(k1, k2)
     pic_name = '{}_vs_{}.png'.format(k1, k2)
     plt.plot(x_values, y)
+    plt.fill_between(x_values, y,alpha=0.5)
     plt.title(title)
+    plt.ylim(min(y),max(y))
     plt.xlim([x_values[0], x_values[-1]])
     plt.show()
 
@@ -204,7 +213,10 @@ if __name__ == '__main__':
                 navn = input("skriv inn forkortelsen du vil ha med: ").upper()
                 if navn in currency_list:
                     mine_valg.append(navn)
-            plot_currencies(min_df,mine_valg)
+            if len(mine_valg)>0:
+                plot_currencies(min_df,mine_valg)
+            else:
+                print("ingen valutaer valgt")
         #to be implemented
         elif valg == 4:
             pass
