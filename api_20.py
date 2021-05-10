@@ -102,7 +102,7 @@ def find_curencies(json_data):
         attributes = json_data["data"]["dataSets"][0]["series"][key]["attributes"]
         cur_dict = json_data["data"]["dataSets"][0]["series"][key]["observations"]
         if (attributes[0] == 1 or attributes[0] == 2 or attributes[0] == 0) and attributes[2] == 1:
-            currencies.append([round(float(cur_dict[key][0]), 4) / 100.0 for key in cur_dict])
+            currencies.append([round(float(cur_dict[key][0])/100.0, 4) for key in cur_dict])
         else:
             currencies.append([round(float(cur_dict[key][0]), 4) for key in cur_dict])
     base_curs = find_bas_cur(json_data)
