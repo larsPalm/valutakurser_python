@@ -127,7 +127,7 @@ def store_data(df):
 
 
 def store_data_json(df):
-    df.to_json("currency.json")
+    df.to_json("currency.json",orient="index",indent=4)
     file = open("dates.txt", "w")
     file.write(str(date.today()) + "\n")
     file.close()
@@ -183,6 +183,7 @@ if __name__ == '__main__':
     store_data(min_df)
     print(date.today(), datetime.datetime.strptime("2021-05-05", formating).date())
     print(date.today() > datetime.datetime.strptime("2021-05-05", formating).date())
+    store_data_json(min_df)
     # start of the functionality
     currency_list = list(min_df.columns)
     valg = -1
