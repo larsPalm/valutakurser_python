@@ -21,11 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'k_@xv&2$(mu3wjx5e@=r+&)=(5%k+6g@b9)69quzny%0xj6qii'
-
+SECRET_KEY = os.getenv('currency_server_secret_key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','currencyapiserver.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'currencyapiserver.herokuapp.com']
 
 
 # Application definition
@@ -78,10 +78,25 @@ WSGI_APPLICATION = 'currencyapiserver.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+        'NAME': os.getenv('currency_server_db_name'),
+
+        'USER': os.getenv('currency_server_db_user'),
+
+        'PASSWORD': os.getenv('currency_server_db_password'),
+
+        'HOST': 'localhost',
+
+        'PORT': '5432',
+
+        #'ATOMATIC_REQUESTS':True,
+
     }
+
 }
 
 
