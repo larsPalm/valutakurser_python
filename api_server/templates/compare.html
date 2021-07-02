@@ -27,9 +27,9 @@
     </select>
     <button class="go-btn" type="submit">submit</button>
     </form>
-    {% if img %}
+    {% if plot_div %}
     {% autoescape off %}
-    {{img}}
+    {{ plot_div }}
     {% endautoescape %}
     {% endif %}
     {% if msg %}
