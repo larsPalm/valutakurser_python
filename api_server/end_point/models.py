@@ -6,5 +6,8 @@ class Currency_value(models.Model):
     cur_name = models.CharField(max_length=3)
     dato = models.CharField(max_length=11)
 
+    class Meta:
+        unique_together = (("cur_name", "dato"),)
+
     def __str__(self):
         return '{},{}: {}'.format(self.cur_name,self.dato,self.value)

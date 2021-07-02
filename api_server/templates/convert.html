@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% load static %}
+{% include "base.html" %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Currency calculator</title>
+</head>
+<body>
+<!--<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">-->
+<h1>Valutakalkulator</h1>
+<h2>Her kan du velge mellom over 20 valutaer!!</h2>
+<div class="selCont">
+<h2>velg valuta:</h2>
+<form action="{% url 'convert' %}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+    {% csrf_token %}
+    <label for="from">from</label>
+    <select id="from" name="from_cur">
+        {% for base in bases %}
+        <option value={{base}}>{{base}}</option>
+        {% endfor %}
+    </select>
+    <label for="to">to</label>
+    <select id="to" name="to_cur">
+        {% for base in bases %}
+        <option value={{base}}>{{base}}</option>
+        {% endfor %}
+    </select>
+    <br>
+        <label for="amount"></label>
+    <input type="text" id="amount" name="quantity" inputmode="numeric" placeholder="Enter number..."
+           value="{{0}}" oninput="this.value = this.value.replace(/[^0-9.]/g, '');
+        this.value = this.value.replace(/(\..*)\./g, '$1');" style="text-align:right;">
+    <button class="go-btn" type="submit">submit</button>
+    </form>
+</div>
+{% if extra%}
+<h1>{{extra}}</h1>
+{% endif %}
+{% if message%}
+<h1>{{message}}</h1>
+{% endif %}
+</body>
+</html>

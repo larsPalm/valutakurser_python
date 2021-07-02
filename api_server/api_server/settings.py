@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'end_point.apps.EndPointConfig',
+    #'end_point.apps.EndPointConfig',
     'widget_tweaks',
     'api_server',
+    'end_point'
     #'djangosecure',
     #'sslserver',
     #'djcelery',
@@ -63,7 +64,7 @@ ROOT_URLCONF = 'api_server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates', os.path.join(BASE_DIR, 'templates/'),os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,10 +128,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
+MEDIA_URL= "/media/"
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
+    BASE_DIR/'static',
 )
 
 BROKER_URL = 'redis://127.0.0.1:6379'#'django://guest:guest@localhost'#'amqp://localhost'
