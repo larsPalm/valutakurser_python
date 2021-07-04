@@ -146,3 +146,16 @@ def compare(request):
                             output_type='div')
             return render(request, 'compare.html', {'bases': base_curs,'plot_div': plot_div})
     return render(request, 'compare.html', {'bases': base_curs})
+
+def get_latest(request):
+    sql_response = Currency_value.objects.values('cur_name').distinct()
+    base_curs = []
+    for elm in sql_response:
+        base_curs.append(elm['cur_name'])
+    max_year = Currency_value.objects.all().aggregate(Max('dato'))['dato__max']
+    data = {}
+    for base in base_curs:
+        data[base] = Currency_value.objects.get(dato=max_year, cur_name=base).value
+    response = {}
+    response[max_year] = data
+    return HttpResponse(json.dumps(response))

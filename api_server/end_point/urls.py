@@ -10,4 +10,5 @@ urlpatterns = [
     path('convert/', views.convert, name='convert'),
     path('info/', views.get_currency, name='info'),
     path('compare/', views.compare, name='compare'),
+    path('latestValues/', views.get_latest, name='latest'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
