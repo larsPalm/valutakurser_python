@@ -1,0 +1,30 @@
+{% include "base.html" %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'index' %}">Api server</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'convert' %}">Convert <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'compare' %}">Compare<span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    </div>
+    <!--{% if not request.user.is_authenticated %}
+    <div class="row" id="registration_div">
+        <ul class="navbar-nav mr-auto sm">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'redirect_login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'signup' %}">sign up</a>
+            </li>
+        </ul>
+    </div>
+    {% endif %}-->
+</nav>

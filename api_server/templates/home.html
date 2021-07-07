@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HomePage</title>
+</head>
+<body>
+{% include "navbar.html" %}
+<H1>valutaapi-server og valutakalkulator</H1>
+<H2>Apiserver</H2>
+<h3>Kun data for valutaene fra siste døgn: <a class="navbar-brand" href="{% url 'latest' %}">Nyeste verdi</a></h3>
+<h3>Data om valutaenes verdi over flere måneder: <a class="navbar-brand" href="{% url 'get_info' %}">Alle verdiene</a></h3>
+<h3>Disse to linkene vil som nevnt vise enten den nyeste verdien til hver valuta, eller alle verdiene som serveren har
+om de ulike valutaene. Responsen er av typen json, noe som gjør det lett å parse dataene for brukerne</h3>
+<H2>online valutakalkulator</H2>
+<h3>For online funksjonalitet, trenger brukeren kun å bruke navbar-en i toppen av siden for å kunne velge mellom
+konvertering mellom flere valutaer (Convert) eller se utviklene for en valuta mot en annen (Compare)</h3>
+</body>
+</html>
