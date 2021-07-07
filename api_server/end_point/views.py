@@ -14,13 +14,16 @@ import datetime
 from random import randint
 import matplotlib.pyplot as plt
 import io, base64
-from plotly.offline import plot
+from plotly.offline import plot,plot_mpl
 import plotly.graph_objects as go
+from django.http import FileResponse
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
 def index(request):
-    #return render(request,"home.html")
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return render(request,"home.html")
+    #return HttpResponse("Hello, world. You're at the polls index.")
 
 @api_view(['GET'])
 def get_info(request):
@@ -88,7 +91,7 @@ def convert(request):
         base_curs.append(elm['cur_name'])
     #print(base_curs)
     if request.POST:
-        print(request.POST)
+        #print(request.POST)
         finnes = True
         er_nummer = True
         #print(request.POST['from_cur'],request.POST['to_cur'],request.POST['quantity'])
@@ -159,3 +162,101 @@ def get_latest(request):
     response = {}
     response[max_year] = data
     return HttpResponse(json.dumps(response))
+
+def login_view(request):
+    return HttpResponse("Hello, welcome")
+
+def signup_view(request):
+    return HttpResponse("Hello, welcome")
+
+#@api_view(['POST'])
+def compare_img(request):
+    sql_response = Currency_value.objects.values('cur_name').distinct()
+    base_curs = []
+    for elm in sql_response:
+        base_curs.append(elm['cur_name'])
+    #return HttpResponse('Fuck')
+    if request.POST or True:
+        print(request.POST)
+        #to_cur = request.POST['to_cur']
+        #from_cur = request.POST['from_cur']
+        to_cur = 'EUR'
+        from_cur = 'USD'
+        if to_cur not in base_curs or from_cur not in base_curs:
+            return HttpResponse('invalid input')
+        else:
+            date_dict = Currency_value.objects.values('dato').distinct()
+            datoer = [elm['dato'] for elm in date_dict]
+            cur1_values = [Currency_value.objects.get(dato=date, cur_name=from_cur).value for date in datoer]
+            cur2_values = [Currency_value.objects.get(dato=date, cur_name=to_cur).value for date in datoer]
+            graph_value = [round(v1 / v2, 4) for v1, v2 in zip(cur1_values, cur2_values)]
+            x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
+            graphs = []
+            fig = go.Scatter(x=x_values,y=graph_value,mode='lines',fill='tozeroy')
+            graphs.append(fig)
+            layout = go.Layout(title='{} vs {}'.format(from_cur, to_cur),
+                               yaxis=dict(range=[min(graph_value), max(graph_value)]))
+            plot_div = plot({'data': graphs, 'layout': layout},
+                            output_type='div')
+            print(type(plot_div))
+            return HttpResponse(plot_div)
+    return render(request, 'compare.html', {'bases': base_curs})
+
+
+@api_view(['GET'])
+def compare_img2(request,from_cur,to_cur):
+    sql_response = Currency_value.objects.values('cur_name').distinct()
+    base_curs = []
+    print(from_cur,to_cur)
+    for elm in sql_response:
+        base_curs.append(elm['cur_name'])
+    if to_cur not in base_curs or from_cur not in base_curs:
+        return HttpResponse('invalid input')
+    else:
+        date_dict = Currency_value.objects.values('dato').distinct()
+        datoer = [elm['dato'] for elm in date_dict]
+        cur1_values = [Currency_value.objects.get(dato=date, cur_name=from_cur).value for date in datoer]
+        cur2_values = [Currency_value.objects.get(dato=date, cur_name=to_cur).value for date in datoer]
+        graph_value = [round(v1 / v2, 4) for v1, v2 in zip(cur1_values, cur2_values)]
+        x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
+        graphs = []
+        fig = go.Scatter(x=x_values, y=graph_value, mode='lines', fill='tozeroy')
+        graphs.append(fig)
+        layout = go.Layout(title='{} vs {}'.format(from_cur, to_cur),
+                           yaxis=dict(range=[min(graph_value), max(graph_value)]))
+        plot_div = plot({'data': graphs, 'layout': layout},
+                        output_type='div')
+
+        #plot_mpl(fig2)
+        print(type(plot_div))
+        return HttpResponse(plot_div)
+
+def base_64_compare(request,from_cur,to_cur):
+    sql_response = Currency_value.objects.values('cur_name').distinct()
+    base_curs = []
+    print(from_cur, to_cur)
+    for elm in sql_response:
+        base_curs.append(elm['cur_name'])
+    if to_cur not in base_curs or from_cur not in base_curs:
+        return HttpResponse('invalid input')
+    else:
+        date_dict = Currency_value.objects.values('dato').distinct()
+        datoer = [elm['dato'] for elm in date_dict]
+        cur1_values = [Currency_value.objects.get(dato=date, cur_name=from_cur).value for date in datoer]
+        cur2_values = [Currency_value.objects.get(dato=date, cur_name=to_cur).value for date in datoer]
+        graph_value = [round(v1 / v2, 4) for v1, v2 in zip(cur1_values, cur2_values)]
+        x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
+        title = '{} vs {}'.format(from_cur, to_cur)
+        colors1 = ['b', "g", 'r', 'c', "m", "y", 'k']
+        colors2 = ["blue", "green", 'red', "cyan", "magenta", 'yellow', 'black']
+        index = randint(0, len(colors1) - 1)
+        fig2 = plt.figure()
+        plt.plot(x_values, graph_value, colors1[index])
+        plt.fill_between(x_values, graph_value, color=colors2[index], alpha=0.5)
+        plt.title(title)
+        plt.ylim(min(graph_value), max(graph_value))
+        plt.xlim([x_values[0], x_values[-1]])
+        fig2.savefig('response.png')
+        with open('response.png', "rb") as image_file:
+            base64string = base64.b64encode(image_file.read())
+            return HttpResponse(base64string)

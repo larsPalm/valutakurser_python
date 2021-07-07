@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     #'end_point.apps.EndPointConfig',
     'widget_tweaks',
     'api_server',
-    'end_point'
+    'end_point',
+    "rest_framework_api_key",
     #'djangosecure',
     #'sslserver',
     #'djcelery',
@@ -64,7 +65,8 @@ ROOT_URLCONF = 'api_server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates', os.path.join(BASE_DIR, 'templates/'),os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / 'templates', os.path.join(BASE_DIR, 'templates/'),os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR , 'templates/registration')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
