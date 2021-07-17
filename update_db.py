@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 import pandas as pd
 import datetime
 import json
+from requests.auth import HTTPBasicAuth
 
 if __name__ == '__main__':
     #insert data to db at server:
@@ -40,6 +41,27 @@ if __name__ == '__main__':
                 'dato':dates[i]}
             json_data = json.dumps(data)
             server_url = 'http://127.0.0.1:8080/insert_data/'
-            retur = requests.post(server_url,data=json_data)
+            retur = requests.post(server_url,data=json_data)#,auth=HTTPBasicAuth(a,b))
             print(retur.status_code,retur.content)
+    for date in dates:
+        data = {
+            'value': 1.0,
+            'cur_name': 'NOK',
+            'dato': date}
+        json_data = json.dumps(data)
+        server_url = 'http://127.0.0.1:8080/insert_data/'
+        retur = requests.post(server_url, data=json_data)  # ,auth=HTTPBasicAuth(a,b))
+        print(retur.status_code, retur.content)
+    """response = requests.get("http://127.0.0.1:8080/dates/")
+    json_response = response.json()
+    all_dates = json_response['dates']"""
+    for date in dates:
+        data = {
+            'value': 1.0,
+            'cur_name': 'NOK',
+            'dato': date}
+        json_data = json.dumps(data)
+        server_url = 'http://127.0.0.1:8080/insert_data/'
+        retur = requests.post(server_url, data=json_data)  # ,auth=HTTPBasicAuth(a,b))
+        print(retur.status_code, retur.content)
 

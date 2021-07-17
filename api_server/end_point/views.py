@@ -1,9 +1,10 @@
 from django.shortcuts import render
 
 from django.http import HttpResponse,JsonResponse
+from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from rest_framework import generics
-from .models import Currency_value
+from .models import Currency_value, CustomUser
 from django.db.models import Max
 from django.core.serializers import serialize
 import pandas as pd
@@ -19,6 +20,9 @@ import plotly.graph_objects as go
 from django.http import FileResponse
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+from .forms import SignUpForm
+from django.contrib.auth import login, logout
+#from rest_framework_api_key.models import APIKey
 
 
 def index(request):
@@ -163,11 +167,6 @@ def get_latest(request):
     response[max_year] = data
     return HttpResponse(json.dumps(response))
 
-def login_view(request):
-    return HttpResponse("Hello, welcome")
-
-def signup_view(request):
-    return HttpResponse("Hello, welcome")
 
 #@api_view(['POST'])
 def compare_img(request):
@@ -260,3 +259,31 @@ def base_64_compare(request,from_cur,to_cur):
         with open('response.png', "rb") as image_file:
             base64string = base64.b64encode(image_file.read())
             return HttpResponse(base64string)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
+
+def login_view(request):
+    return redirect('login')
+
+
+def signup_view(request):
+    form = SignUpForm(request.POST)
+    if form.is_valid():
+        user = form.save()
+        user.refresh_from_db()
+        login(request, user)
+        #api_key, key = APIKey.objects.create_key(name="my-remote-service")
+        #print(api_key,key,APIKey.objects.count())
+        print(user.email)
+    return render(request, 'signup.html', {'form': form})
+
+def get_all_dates(request):
+    sql_response = Currency_value.objects.values('dato').distinct()
+    dates = []
+    for elm in sql_response:
+        dates.append(elm['dato'])
+    return HttpResponse(json.dumps({'dates':list(dates)}))
