@@ -287,3 +287,54 @@ def get_all_dates(request):
     for elm in sql_response:
         dates.append(elm['dato'])
     return HttpResponse(json.dumps({'dates':list(dates)}))
+
+
+def multiple_compare(request):
+    sql_response = Currency_value.objects.values('cur_name').distinct()
+    base_curs = []
+    for elm in sql_response:
+        base_curs.append(elm['cur_name'])
+    if request.POST:
+        try:
+            base_cur = request.POST['base_cur']
+        except:
+            return render(request, 'compare_multiple.html', {'bases': base_curs, 'msg': 'invalid base cur'})
+        if base_cur not in base_curs:
+            return render(request, 'compare_multiple.html', {'bases': base_curs, 'msg': 'invalid base cur'})
+        currencies = [elm for elm in request.POST if elm != 'base_cur' and elm != 'csrfmiddlewaretoken'
+                      and elm in base_curs and elm !=request.POST['base_cur']]
+        print(currencies)
+        if len(currencies) == 0:
+            return render(request, 'compare_multiple.html', {'bases': base_curs,'msg':'no currencies chosen'})
+        date_dict = Currency_value.objects.values('dato').distinct()
+        datoer = [elm['dato'] for elm in date_dict]
+        base_cur_value = [Currency_value.objects.get(dato=date, cur_name=base_cur).value for date in datoer]
+        values = {}
+        x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
+        for elm in currencies:
+            cur_val = [Currency_value.objects.get(dato=date, cur_name=elm).value for date in datoer]
+            values[elm] = [round(y1/y2,4) for y1,y2 in zip(cur_val,base_cur_value)]
+        graphs = []
+        for elm in values:
+            fig = go.Scatter(x=x_values, y=values[elm], mode='lines',name=elm)
+            graphs.append(fig)
+        title = f'{base_cur} vs '
+        for elm in values:
+            title += elm
+            if elm != currencies[-1]:
+                title += ', '
+        max_val,min_val = -100,-100
+        for key in values:
+            for elm in values[key]:
+                if max_val < elm:
+                    max_val = elm
+                if min_val<0:
+                    min_val = elm
+                elif min_val>0 and min_val>elm:
+                    min_val = elm
+        layout = go.Layout(title=title,
+                           yaxis=dict(range=[min_val, max_val]))
+        plot_div = plot({'data': graphs, 'layout': layout},
+                        output_type='div')
+        return render(request, 'compare_multiple.html', {'bases': base_curs, 'plot_div': plot_div})
+    return render(request, 'compare_multiple.html', {'bases': base_curs})

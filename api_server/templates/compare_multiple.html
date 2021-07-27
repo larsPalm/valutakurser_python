@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>compareMultiple</title>
+</head>
+<body>
+{% load static %}
+{% include "base.html" %}
+{% include "navbar.html" %}
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+<h1>sammenlign flere valutaer mot en ønsket valuta</h1>
+<h2>Her kan du velge mellom over 20 valutaer som base-valuta!!</h2>
+<h2>blant disse 20++ valutaene kan du også velge de du vil sammenligne den mot!!</h2>
+<div>
+    <form action="{% url 'compare_mult' %}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+        {% csrf_token %}
+        <label for="base_cur">base cur</label>
+        <select id="base_cur" name="base_cur">
+            {% for base in bases %}
+            <option value={{base}}>{{base}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        {% for base in bases %}
+        <input type="checkbox" id="{{base}}" name="{{base}}" value="{{base}}">
+        <label for="{{base}}"> {{base}}</label>
+        {% endfor %}
+        <br>
+        <button class="go-btn" type="submit">submit</button>
+    </form>
+    {% if plot_div %}
+    {% autoescape off %}
+    {{ plot_div }}
+    {% endautoescape %}
+    {% endif %}
+    {% if msg %}
+    <h2>{{msg}}</h2>
+    {% endif %}
+</div>
+</body>
+</html>

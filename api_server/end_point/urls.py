@@ -18,5 +18,6 @@ urlpatterns = [
     path('login/', views.login_view, name='redirect_login'),
     #path('login/', auth_views.LoginView.as_view(), name='login'),
     path('signup/', views.signup_view, name="signup"),
-    path('dates/',views.get_all_dates,name='allDates')
+    path('dates/',views.get_all_dates,name='allDates'),
+    path('compareMult/',views.multiple_compare,name='compare_mult')
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

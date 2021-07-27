@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',]
 
-
+#API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'api_server',
     'end_point',
-    "rest_framework_api_key",
+    #"rest_framework_api_key",
+    'crispy_forms',
     #'djangosecure',
     #'sslserver',
     #'djcelery',
@@ -155,6 +156,19 @@ CHANNEL_LAYERS = {
         },
     },
 }
+"""
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework_api_key.permissions.HasAPIKey',
+    ]
+}
+"""
+AUTH_USER_MODEL = "end_point.CustomUser"
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
