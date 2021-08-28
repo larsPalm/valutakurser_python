@@ -151,7 +151,10 @@ def compare(request):
                                yaxis=dict(range=[min(graph_value), max(graph_value)]))
             plot_div = plot({'data': graphs, 'layout': layout},
                             output_type='div')
-            return render(request, 'compare.html', {'bases': base_curs,'plot_div': plot_div})
+            return render(request, 'compare.html', {'bases': base_curs,
+                                                    'plot_div': plot_div,
+                                                    'cur_from':from_cur,
+                                                    'cur_to':to_cur})
     return render(request, 'compare.html', {'bases': base_curs})
 
 def get_latest(request):
@@ -303,7 +306,6 @@ def multiple_compare(request):
             return render(request, 'compare_multiple.html', {'bases': base_curs, 'msg': 'invalid base cur'})
         currencies = [elm for elm in request.POST if elm != 'base_cur' and elm != 'csrfmiddlewaretoken'
                       and elm in base_curs and elm !=request.POST['base_cur']]
-        print(currencies)
         if len(currencies) == 0:
             return render(request, 'compare_multiple.html', {'bases': base_curs,'msg':'no currencies chosen'})
         date_dict = Currency_value.objects.values('dato').distinct()
@@ -338,3 +340,68 @@ def multiple_compare(request):
                         output_type='div')
         return render(request, 'compare_multiple.html', {'bases': base_curs, 'plot_div': plot_div})
     return render(request, 'compare_multiple.html', {'bases': base_curs})
+
+def compare_mult_cur(request,base,others):
+    sql_response = Currency_value.objects.values('cur_name').distinct()
+    base_curs = []
+    for elm in sql_response:
+        base_curs.append(elm['cur_name'])
+    if base not in base_curs:
+        return HttpResponse("Error")
+    candidates = others.split("_")
+    print(candidates)
+    valid_curs = []
+    for elm in candidates:
+        if elm == base or elm == "":
+            continue
+        if elm not in base_curs:
+            return HttpResponse("Error")
+        valid_curs.append(elm)
+    print(valid_curs)
+    date_dict = Currency_value.objects.values('dato').distinct()
+    datoer = [elm['dato'] for elm in date_dict]
+    base_cur_value = [Currency_value.objects.get(dato=date, cur_name=base).value for date in datoer]
+    values = {}
+    x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
+    for elm in valid_curs:
+        cur_val = [Currency_value.objects.get(dato=date, cur_name=elm).value for date in datoer]
+        values[elm] = [round(y1 / y2, 4) for y1, y2 in zip(cur_val, base_cur_value)]
+    print()
+    title = f'{base} vs '
+    for elm in values:
+        title += elm
+        if elm != valid_curs[-1]:
+            title += ', '
+    max_val, min_val = -100, -100
+    for key in values:
+        for elm in values[key]:
+            if max_val < elm:
+                max_val = elm
+            if min_val < 0:
+                min_val = elm
+            elif min_val > 0 and min_val > elm:
+                min_val = elm
+    fig2 = plt.figure()
+    for key in values:
+        plt.plot(x_values, values[key], label=key)
+    plt.title(title)
+    plt.legend()
+    plt.ylim(min_val, max_val)
+    plt.xlim([x_values[0], x_values[-1]])
+    fig2.savefig('response2.png')
+    with open('response2.png', "rb") as image_file:
+        base64string = base64.b64encode(image_file.read())
+        return HttpResponse(base64string)
+
+def get_latest_lazy(request):
+    sql_response = Currency_value.objects.values('cur_name').distinct()
+    base_curs = []
+    for elm in sql_response:
+        base_curs.append(elm['cur_name'])
+    max_year = Currency_value.objects.all().aggregate(Max('dato'))['dato__max']
+    data = {}
+    for base in base_curs:
+        data[base] = Currency_value.objects.get(dato=max_year, cur_name=base).value
+    response = {}
+    response[max_year] = data
+    return HttpResponse(json.dumps(data))
