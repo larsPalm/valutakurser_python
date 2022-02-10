@@ -15,7 +15,7 @@ click-repl==0.2.0
 cryptography @ file:///Users/runner/miniforge3/conda-bld/cryptography_1616851512278/work
 cycler==0.10.0
 dj-database-url==0.5.0
-Django==3.2.5
+Django==3.2.12
 django-celery==3.3.1
 django-heroku==0.3.1
 django-kombu==0.9.4
