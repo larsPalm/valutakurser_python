@@ -1,11 +1,13 @@
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.decorators import api_view
-from pandas import DataFrame
 import json
-from .get_stored import *
-from .validate_input import *
-from .make_plot import *
+import base64
+from .get_stored import get_all_values, convert_between, newest_date, \
+    get_newest_for_all, get_mult_curs_with_dates, get_bascurs, get_dates
+from .validate_input import validate_a_basecur
+from .make_plot import make_plotly_plot_mult, plot_compare_2_cur, \
+    get_mult__with_dates, make_matplot_plot_mult
 
 
 def index(request):
@@ -14,54 +16,21 @@ def index(request):
 
 @api_view(['GET'])
 def get_info(request):
-    try:
-        qs = Currency_value.objects.all()
-        currency_data = {}
-        #cur2 ={}
-        dates = []
-        for info in qs:
-            if info.cur_name not in currency_data.keys():
-                currency_data[info.cur_name] = {}
-                #cur2[info.cur_name] = []
-            if info.dato not in dates:
-                dates.append(info.dato)
-            currency_data[info.cur_name][info.dato] = info.value
-            #cur2[info.cur_name].append(info.value)
-        df = DataFrame(currency_data,index=dates)
-        df = df.sort_index()
-        df.index.name = 'dates'
-        """alterative måte å lage api-et på
-        data = {}
-        data['currencies'] = cur2
-        data['dates'] =dates
-        json_data = json.dumps(data)"""
-        return HttpResponse(df.to_json(orient='index'), content_type='application/json')
-    except:
-        print('something wrong happened')
-        return HttpResponse("you should be provided with info")
+    return HttpResponse(get_all_values(), content_type='application/json')
 
 
 @api_view(['POST'])
 def insert_data(request):
-    try:
-        data = json.loads(request.body)
-        print(data, type(data))
-        Currency_value.objects.update_or_create(
-            cur_name=data['cur_name'], dato=data['dato'],
-            defaults=data
-        )
-        return HttpResponse("success")
-    except:
-        return HttpResponse("something bad happened")
+    return HttpResponse()
 
 
 @api_view(['GET'])
 def get_currency(request):
     base_curs = get_bascurs()
     return HttpResponse(json.dumps({'created by': {'name': 'Lars Palm',
-                                                  'Gtihub': 'https://github.com/larsPalm',
-                                                  'Country': 'Kolbotn,Norway',
-                                                  'When': 'Summer 2021'},
+                                                   'Gtihub': 'https://github.com/larsPalm',
+                                                   'Country': 'Kolbotn,Norway',
+                                                   'When': 'Summer 2021'},
                                     'info': ['list of our supported currencies',
                                              'made just for fun, not professional'],
                                     'url for data': 'http://127.0.0.1:8080/get_info/',
@@ -104,7 +73,7 @@ def compare(request):
 
 
 def get_latest(request):
-    response = {}
+    response = dict()
     response[newest_date()] = get_newest_for_all()
     return HttpResponse(json.dumps(response))
 
@@ -114,7 +83,7 @@ def base_64_compare(request, from_cur, to_cur):
     if to_cur not in base_curs or from_cur not in base_curs:
         return HttpResponse('invalid input')
     else:
-        get_mult__with_dates(from_cur,to_cur)
+        get_mult__with_dates(from_cur, to_cur)
         with open('response.png', "rb") as image_file:
             base64string = base64.b64encode(image_file.read())
             return HttpResponse(base64string)
@@ -138,8 +107,9 @@ def multiple_compare(request):
         if len(currencies) == 0:
             return render(request, 'compare_multiple.html', {'bases': base_curs, 'msg': 'no currencies chosen'})
         values, x_values, title, min_val, max_val = get_mult_curs_with_dates(base_cur, currencies)
-        plot_div = make_plotly_plot_mult(values, x_values, title, min_val, max_val)
-        return render(request, 'compare_multiple.html', {'bases': base_curs, 'plot_div': plot_div})
+        return render(request, 'compare_multiple.html',
+                      {'bases': base_curs,
+                       'plot_div': make_plotly_plot_mult(values, x_values, title, min_val, max_val)})
     return render(request, 'compare_multiple.html', {'bases': base_curs})
 
 

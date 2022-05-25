@@ -1,13 +1,12 @@
-from plotly.offline import plot,plot_mpl
+from plotly.offline import plot
 import plotly.graph_objects as go
 from random import randint
 import matplotlib.pyplot as plt
-import io, base64
-from .get_stored import *
-from .validate_input import *
+import datetime
+from .get_stored import get_dates, get_a_cur, compare_2_cur
 
 
-def get_mult__with_dates(from_cur,to_cur):
+def get_mult__with_dates(from_cur, to_cur):
     x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in get_dates()]
     cur1 = get_a_cur(from_cur)
     cur2 = get_a_cur(to_cur)
@@ -25,7 +24,7 @@ def get_mult__with_dates(from_cur,to_cur):
     fig2.savefig('response.png')
 
 
-def make_matplot_plot_mult(values,x_values,title,min_val,max_val):
+def make_matplot_plot_mult(values, x_values, title, min_val, max_val):
     fig2 = plt.figure()
     for key in values:
         plt.plot(x_values, values[key], label=key)
@@ -36,7 +35,7 @@ def make_matplot_plot_mult(values,x_values,title,min_val,max_val):
     fig2.savefig('response2.png')
 
 
-def make_plotly_plot_mult(values,x_values,title,min_val,max_val):
+def make_plotly_plot_mult(values, x_values, title, min_val, max_val):
     graphs = []
     for elm in values:
         fig = go.Scatter(x=x_values, y=values[elm], mode='lines', name=elm)
@@ -48,7 +47,7 @@ def make_plotly_plot_mult(values,x_values,title,min_val,max_val):
     return plot_div
 
 
-def plot_compare_2_cur(from_cur,to_cur):
+def plot_compare_2_cur(from_cur, to_cur):
     graphs = []
     graph_value, x_values = compare_2_cur(from_cur, to_cur)
     fig = go.Scatter(x=x_values, y=graph_value, mode='lines', fill='tozeroy')
