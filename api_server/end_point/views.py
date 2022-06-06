@@ -17,16 +17,6 @@ def index(request):
 
 @api_view(['GET'])
 def get_info(request):
-    return HttpResponse(get_all_values(), content_type='application/json')
-
-
-@api_view(['POST'])
-def insert_data(request):
-    return HttpResponse(data_insert(request.body))
-
-
-@api_view(['GET'])
-def get_currency(request):
     base_curs = get_bascurs()
     return HttpResponse(json.dumps({'created by': {'name': 'Lars Palm',
                                                    'Gtihub': 'https://github.com/larsPalm',
@@ -36,6 +26,16 @@ def get_currency(request):
                                              'made just for fun, not professional'],
                                     'url for data': 'http://127.0.0.1:8080/get_info/',
                                     'supported currencies': base_curs}))
+
+
+@api_view(['POST'])
+def insert_data(request):
+    return HttpResponse(data_insert(request.body))
+
+
+@api_view(['GET'])
+def get_currency(request):
+    return HttpResponse(get_all_values(), content_type='application/json')
 
 
 def convert(request):
