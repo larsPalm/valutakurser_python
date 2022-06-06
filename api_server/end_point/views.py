@@ -8,6 +8,7 @@ from .get_stored import get_all_values, convert_between, newest_date, \
 from .validate_input import validate_a_basecur
 from .make_plot import make_plotly_plot_mult, plot_compare_2_cur, \
     get_mult__with_dates, make_matplot_plot_mult
+from .store_data import data_insert
 
 
 def index(request):
@@ -21,7 +22,7 @@ def get_info(request):
 
 @api_view(['POST'])
 def insert_data(request):
-    return HttpResponse()
+    return HttpResponse(data_insert(request.body))
 
 
 @api_view(['GET'])

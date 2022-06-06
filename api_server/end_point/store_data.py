@@ -2,7 +2,7 @@ import json
 from .models import Currency_value
 
 
-def insert_data(input_data):
+def data_insert(input_data):
     try:
         data = json.loads(input_data)
         print(data, type(data))
