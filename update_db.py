@@ -6,6 +6,7 @@ import datetime
 import json
 from requests.auth import HTTPBasicAuth
 
+
 if __name__ == '__main__':
     #insert data to db at server:
     end_date = date.today()
@@ -35,14 +36,14 @@ if __name__ == '__main__':
     dates = [elm["id"] for elm in info_json["data"]["structure"]["dimensions"]["observation"][0]["values"]]
     for cur in map_cur_values:
         for i in range(len(map_cur_values[cur])):
-            data={
-                'value':map_cur_values[cur][i],
-                'cur_name':cur,
-                'dato':dates[i]}
+            data = {
+                'value': map_cur_values[cur][i],
+                'cur_name': cur,
+                'dato': dates[i]}
             json_data = json.dumps(data)
             server_url = 'http://127.0.0.1:8080/insert_data/'
-            retur = requests.post(server_url,data=json_data)#,auth=HTTPBasicAuth(a,b))
-            print(retur.status_code,retur.content)
+            retur = requests.post(server_url, data=json_data)
+            print(retur.status_code, retur.content)
     for date in dates:
         data = {
             'value': 1.0,
@@ -62,6 +63,6 @@ if __name__ == '__main__':
             'dato': date}
         json_data = json.dumps(data)
         server_url = 'http://127.0.0.1:8080/insert_data/'
-        retur = requests.post(server_url, data=json_data)  # ,auth=HTTPBasicAuth(a,b))
+        retur = requests.post(server_url, data=json_data)
         print(retur.status_code, retur.content)
 
