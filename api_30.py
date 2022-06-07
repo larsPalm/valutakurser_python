@@ -15,15 +15,19 @@ bruk denne linken for tips:
 https://dev.to/coderasha/implement-real-time-updates-with-django-rest-framework-building-cryptocurrency-api-1kld
 """
 
+
 def les_info():
     response =requests.get("http://127.0.0.1:8080/get_info/")
     json_response = response.json()
     df = pd.DataFrame(json_response)
-    print(df.index)
     return df
+
+
 """
 The next three methods had tp be rewritten do to the fact that the data format is not the
 same ass for api_20"""
+
+
 def convert_currency(df, base_from, base_to, amount):
     dates = list(df.columns)
     c1_val = df.at[base_from,dates[-1]]
@@ -62,15 +66,14 @@ def plot_currencies(df, wanted_currencies=None):
     plt.show()
 
 
-
 if __name__ == '__main__':
     print(date.today())
-    print(os.getenv('API_SERVER_SECRET_KEY'))
     """Note:
     kjør serveren i terminal-appen og ikke i pycharm ettersom pycharm ikke kan se environment variables
     """
     min_df = les_info()
     currency_list = list(min_df.index)
+    print(min_df)
     valg = -1
     while valg != 0:
         print("type 0 for exit\ntype 1 for converting between to currencies\ntype 2 for plot compare of 2 currencies")
@@ -100,8 +103,8 @@ if __name__ == '__main__':
             v1 = input("skriv inn forkortelse på valuta nr1: ").upper()
             v2 = input("skriv inn forkortelse på valuta nr2: ").upper()
             if v1 in currency_list and v2 in currency_list:
-                cur1 = min_df.loc[v1,:]
-                cur2 = min_df.loc[v2,:]
+                cur1 = min_df.loc[v1, :]
+                cur2 = min_df.loc[v2, :]
                 datoer = min_df.columns
                 plot_compare(datoer, cur1, cur2, v1, v2)
             else:
