@@ -52,7 +52,7 @@ if __name__ == '__main__':
         json_data = json.dumps(data)
         server_url = 'http://127.0.0.1:8080/insert_data/'
         retur = requests.post(server_url, data=json_data)  # ,auth=HTTPBasicAuth(a,b))
-        print(retur.status_code, retur.content)
+        print(retur.status_code, retur.text)
     """response = requests.get("http://127.0.0.1:8080/dates/")
     json_response = response.json()
     all_dates = json_response['dates']"""
