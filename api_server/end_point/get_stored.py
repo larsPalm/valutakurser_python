@@ -1,5 +1,5 @@
-from .models import Currency_value, CustomUser
-from django.db.models import Max
+from .models import Currency_value, Rent_value, Rent_info
+from django.db.models import Max, Min
 import datetime
 from pandas import DataFrame
 import json
@@ -125,3 +125,36 @@ def compare_2_cur(from_cur, to_cur):
     graph_value = [round(v1 / v2, 4) for v1, v2 in zip(cur1_values, cur2_values)]
     x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
     return graph_value, x_values
+
+
+def get_oldest_newest():
+    max_year = Currency_value.objects.all().aggregate(Max('dato'))['dato__max']
+    min_year = Currency_value.objects.all().aggregate(Min('dato'))['dato__min']
+    return json.dumps({'oldest': min_year, 'newest': max_year})
+
+
+def get_all_rent_info():
+    qs_ri = Rent_info.objects.all()
+    rent_data = {}
+    for elm in qs_ri:
+        desc = {'id': elm.id, 'name': elm.name, 'desc': elm.description}
+        qs_rd = Rent_value.objects.filter(name=elm.id)
+        values = {rd.dato: rd.value for rd in qs_rd}
+        print(values)
+        rent_data[elm.id] = {"desc": desc, 'values': values}
+    return json.dumps(rent_data)
+
+
+def get_ids_rent():
+    qs_ri = Rent_info.objects.all()
+    return json.dumps([elm.id for elm in qs_ri])
+
+
+def get_one_rent(name):
+    try:
+        qs_ri = Rent_info.objects.get(id=name)
+        desc = {'id': qs_ri.id, 'name': qs_ri.name, 'desc': qs_ri.description}
+        values = {elm.dato: elm.value for elm in Rent_value.objects.filter(name=desc['id'])}
+        return json.dumps({"desc": desc, 'values': values})
+    except:
+        return json.dumps({'msg': "no rent with that id"})

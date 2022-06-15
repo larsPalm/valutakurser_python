@@ -5,10 +5,11 @@ import json
 import base64
 from .get_stored import get_all_values, convert_between, newest_date, \
     get_newest_for_all, get_mult_curs_with_dates, get_bascurs, get_dates
+from .get_stored import get_all_rent_info, get_ids_rent, get_one_rent, get_oldest_newest
 from .validate_input import validate_a_basecur
 from .make_plot import make_plotly_plot_mult, plot_compare_2_cur, \
     get_mult__with_dates, make_matplot_plot_mult
-from .store_data import data_insert
+from .store_data import data_insert, insert_rent_data, insert_rent_desc
 
 
 def index(request):
@@ -137,3 +138,29 @@ def compare_mult_cur(request, base, others):
 
 def get_latest_lazy(request):
     return HttpResponse(json.dumps(get_newest_for_all()))
+
+
+@api_view(['POST'])
+def store_rent_desc(request):
+    return HttpResponse(insert_rent_desc(request.body))
+
+
+@api_view(['POST'])
+def store_rent_data(request):
+    return HttpResponse(insert_rent_data(request.body))
+
+
+def get_all_rent_data(request):
+    return HttpResponse(get_all_rent_info())
+
+
+def get_rent_ids(request):
+    return HttpResponse(get_ids_rent())
+
+
+def one_rent(request, name):
+    return HttpResponse(get_one_rent(name))
+
+
+def get_date_range(request):
+    return HttpResponse(get_oldest_newest())
