@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The rent vs NOK</title>
+</head>
+<body>
+{% load static %}
+{% include "navbar.html" %}
+{% if plot_div %}
+    <h6>Note, some of the data is interpolated with linear method as some data points was missing</h6>
+    {% autoescape off %}
+    {{ plot_div }}
+    {% endautoescape %}
+{% endif %}
+</body>
+</html>

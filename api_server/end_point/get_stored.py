@@ -122,6 +122,8 @@ def compare_2_cur(from_cur, to_cur):
     datoer = get_dates()
     cur1_values = [Currency_value.objects.get(dato=date, cur_name=from_cur).value for date in datoer]
     cur2_values = [Currency_value.objects.get(dato=date, cur_name=to_cur).value for date in datoer]
+    print(cur1_values)
+    print(cur2_values)
     graph_value = [round(v1 / v2, 4) for v1, v2 in zip(cur1_values, cur2_values)]
     x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
     return graph_value, x_values
@@ -133,6 +135,12 @@ def get_oldest_newest():
     return json.dumps({'oldest': min_year, 'newest': max_year})
 
 
+def get_oldest_newest_rent():
+    max_year = Rent_value.objects.all().aggregate(Max('dato'))['dato__max']
+    min_year = Rent_value.objects.all().aggregate(Min('dato'))['dato__min']
+    return json.dumps({'oldest': min_year, 'newest': max_year})
+
+
 def get_all_rent_info():
     qs_ri = Rent_info.objects.all()
     rent_data = {}
@@ -140,7 +148,6 @@ def get_all_rent_info():
         desc = {'id': elm.id, 'name': elm.name, 'desc': elm.description}
         qs_rd = Rent_value.objects.filter(name=elm.id)
         values = {rd.dato: rd.value for rd in qs_rd}
-        print(values)
         rent_data[elm.id] = {"desc": desc, 'values': values}
     return json.dumps(rent_data)
 
@@ -154,7 +161,12 @@ def get_one_rent(name):
     try:
         qs_ri = Rent_info.objects.get(id=name)
         desc = {'id': qs_ri.id, 'name': qs_ri.name, 'desc': qs_ri.description}
-        values = {elm.dato: elm.value for elm in Rent_value.objects.filter(name=desc['id'])}
+        values = {elm.dato: elm.value for elm in Rent_value.objects.filter(name=desc['id']).order_by('dato')}
         return json.dumps({"desc": desc, 'values': values})
     except:
         return json.dumps({'msg': "no rent with that id"})
+
+
+def get_dates_rent():
+    date_dict = Rent_value.objects.values('dato').distinct().order_by('dato')
+    return [elm['dato'] for elm in date_dict]

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Display rents</title>
+</head>
+<body>
+{% load static %}
+{% include "navbar.html" %}
+<h1>Choose wanted rents</h1>
+<form action="{% url 'display_rents' %}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+        {% csrf_token %}
+        <br>
+        {% for id in rent_ids %}
+        <input type="checkbox" id="{{id}}" name="{{id}}" value="{{id}}">
+        <label for="{{id}}"> {{id}}</label>
+        <br>
+        {% endfor %}
+        <br>
+        <button class="go-btn" type="submit">submit</button>
+    </form>
+    {% if rent_desc %}
+        {% for value in rent_desc%}
+            <h4>Id: {{value.id}}</h4>
+            <h5>Name: {{value.name}}</h5>
+            <h5>Descrition: {{value.desc}}</h5>
+            <br>
+        {% endfor %}
+    {% endif %}
+    {% if plot_div %}
+    <h6>Note, some of the data is interpolated with linear method as some data points was missing</h6>
+    <h6>The straigth line for GBON and TBIL is due to lack of data after Jul 21</h6>
+    {% autoescape off %}
+    {{ plot_div }}
+    {% endautoescape %}
+    {% endif %}
+    {% if msg %}
+    <h2>{{msg}}</h2>
+    {% endif %}
+</body>
+</html>

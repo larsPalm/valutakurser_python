@@ -4,11 +4,11 @@ from rest_framework.decorators import api_view
 import json
 import base64
 from .get_stored import get_all_values, convert_between, newest_date, \
-    get_newest_for_all, get_mult_curs_with_dates, get_bascurs, get_dates
-from .get_stored import get_all_rent_info, get_ids_rent, get_one_rent, get_oldest_newest
+    get_newest_for_all, get_mult_curs_with_dates, get_bascurs, get_dates, get_dates_rent, compare_2_cur
+from .get_stored import get_all_rent_info, get_ids_rent, get_one_rent, get_oldest_newest, get_oldest_newest_rent
 from .validate_input import validate_a_basecur
 from .make_plot import make_plotly_plot_mult, plot_compare_2_cur, \
-    get_mult__with_dates, make_matplot_plot_mult
+    get_mult__with_dates, make_matplot_plot_mult, plot_rents, plot_rent_vs_nok
 from .store_data import data_insert, insert_rent_data, insert_rent_desc
 
 
@@ -24,7 +24,8 @@ def get_info(request):
                                                    'Country': 'Kolbotn,Norway',
                                                    'When': 'Summer 2021'},
                                     'info': ['list of our supported currencies',
-                                             'made just for fun, not professional'],
+                                             'made just for fun, not professional',
+                                             'Some values may be incorrect due to the shitty api of Norges Bank'],
                                     'url for data': 'http://127.0.0.1:8080/get_info/',
                                     'supported currencies': base_curs}))
 
@@ -164,3 +165,32 @@ def one_rent(request, name):
 
 def get_date_range(request):
     return HttpResponse(get_oldest_newest())
+
+
+def get_date_range_rent(request):
+    return HttpResponse(get_oldest_newest_rent())
+
+
+def get_date_rent(request):
+    return HttpResponse(json.dumps(get_dates_rent()))
+
+
+def display_rents(request):
+    rents = json.loads(get_ids_rent())
+    if request.POST:
+        wanted_rents = [elm for elm in request.POST if elm != 'csrfmiddlewaretoken' and elm in rents]
+        if len(wanted_rents) == 0:
+            return render(request, 'plot_rents.html', {'rent_ids': rents, 'msg': "no selected rents"})
+        rent_info = json.loads(get_all_rent_info())
+        desc_rent = [rent_info[key]['desc'] for key in rent_info if key in wanted_rents]
+        rent_values = {key: rent_info[key]['values'] for key in rent_info if key in wanted_rents}
+        return render(request, 'plot_rents.html', {'rent_ids': rents, 'rent_desc': desc_rent,
+                                                   'plot_div': plot_rents(rent_values)})
+    return render(request, 'plot_rents.html', {'rent_ids': rents})
+
+
+def rent_vs_nok(request):
+    y_val_cur, x_value_cur = compare_2_cur("NOK", "SEK")
+    kpra_data = json.loads(get_one_rent("KPRA"))['values']
+    print(y_val_cur)
+    return render(request, 'rent_and_nok.html', {'plot_div': plot_rent_vs_nok(x_value_cur, y_val_cur, kpra_data)})
