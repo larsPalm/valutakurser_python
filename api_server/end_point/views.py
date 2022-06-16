@@ -192,5 +192,8 @@ def display_rents(request):
 def rent_vs_nok(request):
     y_val_cur, x_value_cur = compare_2_cur("NOK", "SEK")
     kpra_data = json.loads(get_one_rent("KPRA"))['values']
-    print(y_val_cur)
     return render(request, 'rent_and_nok.html', {'plot_div': plot_rent_vs_nok(x_value_cur, y_val_cur, kpra_data)})
+
+
+def base_curs(request):
+    return HttpResponse(json.dumps(get_bascurs()))

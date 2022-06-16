@@ -28,4 +28,5 @@ urlpatterns = [
     path('dates_rent/', views.get_date_rent, name='dates_rent'),
     path('rents/', views.display_rents, name='display_rents'),
     path('rents_vs_nok/', views.rent_vs_nok, name='display_rent_vs_nok'),
+    path('base_cur/', views.base_curs, name='base_cur'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

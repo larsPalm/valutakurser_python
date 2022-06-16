@@ -122,8 +122,6 @@ def compare_2_cur(from_cur, to_cur):
     datoer = get_dates()
     cur1_values = [Currency_value.objects.get(dato=date, cur_name=from_cur).value for date in datoer]
     cur2_values = [Currency_value.objects.get(dato=date, cur_name=to_cur).value for date in datoer]
-    print(cur1_values)
-    print(cur2_values)
     graph_value = [round(v1 / v2, 4) for v1, v2 in zip(cur1_values, cur2_values)]
     x_values = [datetime.datetime.strptime(d, "%Y-%m-%d").date() for d in datoer]
     return graph_value, x_values
