@@ -11,6 +11,9 @@ if __name__ == '__main__':
     #insert data to db at server:
     end_date = date.today()
     start_date = date.today() + relativedelta(months=-1)
+    date_info = requests.get("http://127.0.0.1:8080/date_range/").json()
+    end_date = date_info['newest']
+    start_date = date_info['oldest']
     url = "https://data.norges-bank.no/api/data/EXR/B.USD+AUD+BDT+BRL+GBP+BGN+DKK+" \
           "EUR+PHP+HKD+XDR+I44+INR+IDR+TWI+ISK+JPY+CAD+CNY+HRK+MXN+MMK+NZD+ILS+RON+BYN" \
           "+TWD+PKR+PLN+RUB+SGD+CHF+SEK+ZAR+KRW+THB+CZK+TRY+HUF.NOK.SP?format=sdmx-json&" \
@@ -19,12 +22,13 @@ if __name__ == '__main__':
                'json&startPeriod={}&endPeriod={}&locale=no'.format(start_date, end_date)
     api_info = requests.get(url)
     info_json = api_info.json()
+    print(url)
     currencies = []
     # extracting the values per currency per day
     for key in info_json["data"]["dataSets"][0]["series"]:
         attributes = info_json["data"]["dataSets"][0]["series"][key]["attributes"]
         cur_dict = info_json["data"]["dataSets"][0]["series"][key]["observations"]
-        if (attributes[0] == 1 or attributes[0] == 2 or attributes[0] == 0) and attributes[2] == 1:
+        if attributes.count(0) == 4 or (attributes[0] == 1 and attributes[2] == 0) or attributes[0] == 2:
             currencies.append([round(float(cur_dict[key][0]) / 100.0, 4) for key in cur_dict])
         else:
             currencies.append([round(float(cur_dict[key][0]), 4) for key in cur_dict])
