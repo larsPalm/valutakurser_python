@@ -26,19 +26,15 @@ if __name__ == '__main__':
         teller += 1
         if teller == 2:
             break
-    for elm in rents_data:
-        print(len(elm), elm)
     # dates collected
     dates_info = api_info['data']['structure']['dimensions']['observation'][0]['values']
     dates = [di['name'] for di in dates_info]
-    print(dates)
     # info and desc for each rent
     rent_desc = api_info['data']['structure']['dimensions']['series'][1]['values']
     # final parsing and mapping of the data
     rent_ids = [elm['id'] for elm in rent_desc]
     final_rent_info = {}
     for name, ri in zip(rent_ids, rents_data):
-        print(len(dates), len(ri))
         final_rent_info[name] = {d: v for d, v in zip(dates, ri)}
         print(name, len(final_rent_info[name].keys()))
     # sending information to the server for storage
