@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>compare mm</title>
+</head>
+<body>
+{% load static %}
+{% include "navbar.html" %}
+<!--<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">-->
+<h1>Valutakalkulator</h1>
+<h2>Her kan du sammenligne to valutaer blant over 20 valutaer!!</h2>
+<div>
+    <h2>velg valutaer:</h2>
+    <form action="{% url 'compareMM' %}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+        {% csrf_token %}
+    <label for="from">from</label>
+    <select id="from" name="from_cur">
+        {% for base in bases %}
+        <option value={{base}}>{{base}}</option>
+        {% endfor %}
+    </select>
+    <label for="to">to</label>
+    <select id="to" name="to_cur">
+        {% for base in bases %}
+        <option value={{base}}>{{base}}</option>
+        {% endfor %}
+    </select>
+    <button class="go-btn" type="submit">submit</button>
+    </form>
+    {% if plot_div %}
+    {% autoescape off %}
+    {{ plot_div }}
+    {% endautoescape %}
+    {% endif %}
+    {% if msg %}
+    <h2>{{msg}}</h2>
+    {% endif %}
+</div>
+</body>
+</html>
