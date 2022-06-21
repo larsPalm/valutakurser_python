@@ -3,7 +3,8 @@ import plotly.graph_objects as go
 from random import randint
 import matplotlib.pyplot as plt
 import datetime
-from .get_stored import get_dates, get_a_cur, compare_2_cur, get_dates_rent
+from .get_stored import get_dates, get_a_cur, compare_2_cur
+import numpy as np
 
 
 def get_mult__with_dates(from_cur, to_cur):
@@ -51,6 +52,23 @@ def plot_compare_2_cur(from_cur, to_cur):
     graphs = []
     graph_value, x_values = compare_2_cur(from_cur, to_cur)
     fig = go.Scatter(x=x_values, y=graph_value, mode='lines', fill='tozeroy')
+    graphs.append(fig)
+    layout = go.Layout(title='{} vs {}'.format(from_cur, to_cur),
+                       yaxis=dict(range=[min(graph_value), max(graph_value)]))
+    return plot({'data': graphs, 'layout': layout}, output_type='div')
+
+
+def plot_compare_2_cur_mm(from_cur, to_cur):
+    graphs = []
+    graph_value, x_values = compare_2_cur(from_cur, to_cur)
+    fig = go.Scatter(x=x_values, y=graph_value, mode='lines', fill='tonexty',
+                     marker=dict(color='blue', size=5), name='{}/{}'.format(from_cur, to_cur))
+    graphs.append(fig)
+    fig = go.Scatter(x=x_values, y=[np.median(graph_value) for _ in graph_value], mode='lines', fill='tonexty',
+                     marker=dict(color='yellow', size=5), name="median")
+    graphs.append(fig)
+    fig = go.Scatter(x=x_values, y=[np.mean(graph_value) for _ in graph_value], mode='lines', fill='tonexty',
+                     marker=dict(color='red', size=5), name="mean")
     graphs.append(fig)
     layout = go.Layout(title='{} vs {}'.format(from_cur, to_cur),
                        yaxis=dict(range=[min(graph_value), max(graph_value)]))

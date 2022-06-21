@@ -7,7 +7,7 @@ from .get_stored import get_all_values, convert_between, newest_date, \
     get_newest_for_all, get_mult_curs_with_dates, get_bascurs, get_dates, get_dates_rent, compare_2_cur
 from .get_stored import get_all_rent_info, get_ids_rent, get_one_rent, get_oldest_newest, get_oldest_newest_rent
 from .validate_input import validate_a_basecur
-from .make_plot import make_plotly_plot_mult, plot_compare_2_cur, \
+from .make_plot import make_plotly_plot_mult, plot_compare_2_cur, plot_compare_2_cur_mm, \
     get_mult__with_dates, make_matplot_plot_mult, plot_rents, plot_rent_vs_nok
 from .store_data import data_insert, insert_rent_data, insert_rent_desc
 
@@ -73,6 +73,21 @@ def compare(request):
                                                     'cur_from': from_cur,
                                                     'cur_to': to_cur})
     return render(request, 'compare.html', {'bases': base_curs})
+
+
+def compare_mm(request):
+    base_curs = get_bascurs()
+    if request.POST:
+        to_cur = request.POST['to_cur']
+        from_cur = request.POST['from_cur']
+        if not validate_a_basecur(request.POST['to_cur']) or not validate_a_basecur(request.POST['from_cur']):
+            return render(request, 'compareMM.html', {'bases': base_curs, 'msg': 'invalid input'})
+        else:
+            return render(request, 'compareMM.html', {'bases': base_curs,
+                                                      'plot_div': plot_compare_2_cur_mm(from_cur, to_cur),
+                                                      'cur_from': from_cur,
+                                                      'cur_to': to_cur})
+    return render(request, 'compareMM.html', {'bases': base_curs})
 
 
 def get_latest(request):
