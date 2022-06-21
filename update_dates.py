@@ -39,11 +39,13 @@ if __name__ == '__main__':
     api_info = requests.get(url).json()
     rent_info = {key: api_info[key]['values'] for key in api_info}
     dates = requests.get("http://127.0.0.1:8080/dates_rent/").json()
+    cur_date_data = requests.get("http://127.0.0.1:8080/info/").json()
+    cur_dates = list(cur_date_data.keys())
     for elm in rent_info:
         rent_dates = list(rent_info[elm].keys())
         print(len(rent_dates), len(dates))
         print(rent_dates[-1] == dates[-1])
         print(rent_dates[-1], dates[-1])
         print('------')
-        fix_missing(elm, rent_info[elm], dates)
+        fix_missing(elm, rent_info[elm], cur_dates)
 

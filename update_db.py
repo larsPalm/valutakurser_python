@@ -10,10 +10,7 @@ from requests.auth import HTTPBasicAuth
 if __name__ == '__main__':
     #insert data to db at server:
     end_date = date.today()
-    start_date = date.today() + relativedelta(months=-1)
-    date_info = requests.get("http://127.0.0.1:8080/date_range/").json()
-    end_date = date_info['newest']
-    start_date = date_info['oldest']
+    start_date = date.today() + relativedelta(months=-12)
     url = "https://data.norges-bank.no/api/data/EXR/B.USD+AUD+BDT+BRL+GBP+BGN+DKK+" \
           "EUR+PHP+HKD+XDR+I44+INR+IDR+TWI+ISK+JPY+CAD+CNY+HRK+MXN+MMK+NZD+ILS+RON+BYN" \
           "+TWD+PKR+PLN+RUB+SGD+CHF+SEK+ZAR+KRW+THB+CZK+TRY+HUF.NOK.SP?format=sdmx-json&" \
