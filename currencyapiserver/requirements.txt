@@ -5,7 +5,7 @@ backports.functools-lru-cache @ file:///home/conda/feedstock_root/build_artifact
 billiard==3.3.0.23
 brotlipy==0.7.0
 celery @ file:///home/conda/feedstock_root/build_artifacts/celery_1616560202256/work
-certifi==2021.5.30
+certifi==2022.12.7
 cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1613414067184/work
 chardet @ file:///Users/runner/miniforge3/conda-bld/chardet_1610093477312/work
 click @ file:///Users/runner/miniforge3/conda-bld/click_1621503759047/work
